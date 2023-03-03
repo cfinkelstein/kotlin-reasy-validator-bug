@@ -2,6 +2,7 @@ package com.userservice.controller
 
 import com.userservice.model.*
 import com.userservice.model.validation.UUIDPathElement
+import io.smallrye.mutiny.Uni
 import kotlinx.coroutines.*
 import javax.enterprise.context.ApplicationScoped
 import javax.ws.rs.GET
@@ -15,7 +16,7 @@ class UserController {
 
     //validation error as the validator will be executed a second time with a null value
     @GET
-    @Path("/{userId}")
+    @Path("/nb/{userId}")
     suspend fun userById(
         @UUIDPathElement()
         @PathParam("userId") userId: String): Response  {
@@ -26,10 +27,21 @@ class UserController {
 
     //this works as expected - no validation error
     @GET
-    @Path("/synchronous/{userId}")
-    fun userByIdSynchronous(
+    @Path("/b/{userId}")
+    fun userByIdBlocking(
         @UUIDPathElement()
         @PathParam("userId") userId: String): Response  {
         return Response.status(200).build()
     }
+
+    //this works as expected - no validation error
+    @GET
+    @Path("/nbuni/{userId}")
+    fun userByIdNonBlockingUni(
+        @UUIDPathElement()
+        @PathParam("userId") userId: String): Uni<Response> {
+        return Uni.createFrom().item(Response.status(200).build())
+    }
+
+
 }
